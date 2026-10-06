@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fomod>
+  <Name>Blackshield Company</Name>
+  <Author>synthalorian</Author>
+  <Version>@VERSION@</Version>
+  <Website>https://github.com/synthalorian/blackshield-company</Website>
+  <Description>Join a mercenary company, take radiant contracts, rise from Recruit to Commander.</Description>
+  <Groups>
+    <element>Quests and Adventures</element>
+    <element>Guilds/Factions</element>
+  </Groups>
+</fomod>

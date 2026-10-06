@@ -1,0 +1,152 @@
+using System.Text.Json;
+using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Records;
+using Mutagen.Bethesda.Skyrim;
+
+namespace Modkit.Mutagen;
+
+/// <summary>
+/// Re-reads a written plugin from disk and checks what can be checked without
+/// the game: record counts, FormID ranges for ESL, unique EditorIDs, masters,
+/// unresolved links, and every script attachment against the Papyrus sources.
+/// </summary>
+public static class PluginValidator
+{
+    public static int Validate(string pluginPath, PapyrusIndex papyrus, IReadOnlySet<ModKey> allowedMasters, string reportPath)
+    {
+        var errors = new List<string>();
+        var warnings = new List<string>();
+        using var mod = SkyrimMod.CreateFromBinaryOverlay(pluginPath, SkyrimRelease.SkyrimSE);
+        var records = mod.EnumerateMajorRecords().ToList();
+        var own = records.Where(r => r.FormKey.ModKey == mod.ModKey).ToList();
+        var overrides = records.Count - own.Count;
+
+        bool esl = mod.ModHeader.Flags.HasFlag(SkyrimModHeader.HeaderFlag.Small);
+        if (esl)
+        {
+            if (own.Count > 2048) errors.Add($"ESL flag set but {own.Count} new records (max 2048)");
+            foreach (var r in own.Where(r => r.FormKey.ID < 0x800 || r.FormKey.ID > 0xFFF))
+                errors.Add($"ESL FormID out of range: {r.EditorID} {r.FormKey}");
+        }
+
+        foreach (var dup in own.GroupBy(r => r.EditorID ?? "").Where(g => g.Count() > 1))
+            errors.Add($"duplicate EditorID '{dup.Key}' x{dup.Count()}");
+        foreach (var r in own.Where(r => string.IsNullOrEmpty(r.EditorID)))
+            errors.Add($"record without EditorID: {r.FormKey}");
+
+        var masters = mod.ModHeader.MasterReferences.Select(m => m.Master).ToList();
+        foreach (var m in masters.Where(m => !allowedMasters.Contains(m)))
+            errors.Add($"unexpected master: {m}");
+
+        var ownKeys = own.Select(r => r.FormKey).ToHashSet();
+        int links = 0;
+        foreach (var r in records)
+        {
+            foreach (var l in r.EnumerateFormLinks())
+            {
+                if (l.IsNull) continue;
+                links++;
+                var mk = l.FormKey.ModKey;
+                if (mk == mod.ModKey && !ownKeys.Contains(l.FormKey))
+                    errors.Add($"{r.EditorID}: dangling link to {l.FormKey}");
+                else if (mk != mod.ModKey && !masters.Contains(mk))
+                    errors.Add($"{r.EditorID}: link to {l.FormKey} whose plugin is not a master");
+            }
+        }
+
+        int scripts = 0, props = 0;
+        void CheckScripts(IMajorRecordGetter owner, IEnumerable<IScriptEntryGetter> entries)
+        {
+            foreach (var s in entries)
+            {
+                scripts++;
+                if (!papyrus.HasScript(s.Name)) { errors.Add($"{owner.EditorID}: script '{s.Name}' has no .psc source"); continue; }
+                var filled = s.Properties.Select(p => p.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                foreach (var decl in papyrus.Properties(s.Name).Where(d => !d.HasDefault && !filled.Contains(d.Name)))
+                    warnings.Add($"{owner.EditorID}: {s.Name}.{decl.Name} is declared but not filled (None/0 at runtime)");
+                foreach (var p in s.Properties)
+                {
+                    props++;
+                    var decl = papyrus.GetProperty(s.Name, p.Name);
+                    if (decl == null) { errors.Add($"{owner.EditorID}: {s.Name}.{p.Name} is not declared in the source"); continue; }
+                    var t = decl.Type.ToLowerInvariant();
+                    bool ok = p switch
+                    {
+                        IScriptObjectListPropertyGetter => decl.IsArray && t is not ("int" or "float" or "bool" or "string"),
+                        IScriptObjectPropertyGetter => !decl.IsArray && t is not ("int" or "float" or "bool" or "string"),
+                        IScriptIntPropertyGetter => !decl.IsArray && t == "int",
+                        IScriptFloatPropertyGetter => !decl.IsArray && t == "float",
+                        IScriptBoolPropertyGetter => !decl.IsArray && t == "bool",
+                        _ => true,
+                    };
+                    if (!ok) errors.Add($"{owner.EditorID}: {s.Name}.{p.Name} kind mismatch (declared {decl.Type}{(decl.IsArray ? "[]" : "")}, filled as {p.GetType().Name})");
+                    if (p is IScriptObjectPropertyGetter op && op.Object.IsNull) errors.Add($"{owner.EditorID}: {s.Name}.{p.Name} is empty");
+                }
+            }
+        }
+        foreach (var r in records)
+        {
+            if (r is IHaveVirtualMachineAdapterGetter vm && vm.VirtualMachineAdapter != null)
+                CheckScripts(r, vm.VirtualMachineAdapter.Scripts);
+        }
+
+        // Quest-specific sanity: alias ids referenced by objectives and properties exist.
+        foreach (var q in mod.Quests)
+        {
+            var aliasIds = q.Aliases.Select(a => (int)a.ID).ToHashSet();
+            foreach (var o in q.Objectives)
+                foreach (var t in o.Targets)
+                    if (!aliasIds.Contains(t.AliasID)) errors.Add($"{q.EditorID}: objective {o.Index} targets missing alias {t.AliasID}");
+            foreach (var a in q.Aliases)
+            {
+                if (a.Location?.AliasID is int la && !aliasIds.Contains(la)) errors.Add($"{q.EditorID}: alias {a.Name} refers to missing alias {la}");
+                if (a.CreateReferenceToObject is { } c && !aliasIds.Contains(c.AliasID)) errors.Add($"{q.EditorID}: alias {a.Name} creates at missing alias {c.AliasID}");
+            }
+            if (q.VirtualMachineAdapter != null)
+                foreach (var s in q.VirtualMachineAdapter.Scripts)
+                    foreach (var p in s.Properties.OfType<IScriptObjectPropertyGetter>())
+                        if (p.Alias >= 0 && p.Object.FormKey == q.FormKey && !aliasIds.Contains(p.Alias))
+                            errors.Add($"{q.EditorID}: {s.Name}.{p.Name} points at missing alias {p.Alias}");
+            if (q.NextAliasID is uint next && aliasIds.Count > 0 && next <= aliasIds.Max())
+                errors.Add($"{q.EditorID}: NextAliasID {next} must exceed the highest alias id {aliasIds.Max()}");
+        }
+
+        // Round trip: parse the plugin fully, write it back out and compare bytes.
+        var roundTripDir = Directory.CreateTempSubdirectory("modkit-roundtrip-").FullName;
+        var roundTrip = Path.Combine(roundTripDir, Path.GetFileName(pluginPath));
+        try
+        {
+            var full = SkyrimMod.CreateFromBinary(pluginPath, SkyrimRelease.SkyrimSE);
+            full.BeginWrite.ToPath(roundTrip).WithNoLoadOrder().Write();
+            if (!File.ReadAllBytes(roundTrip).AsSpan().SequenceEqual(File.ReadAllBytes(pluginPath)))
+                errors.Add("round trip: re-written plugin differs from the original bytes");
+        }
+        finally { Directory.Delete(roundTripDir, true); }
+
+        var report = new
+        {
+            plugin = Path.GetFileName(pluginPath),
+            eslFlagged = esl,
+            masters = masters.Select(m => m.FileName.String).ToArray(),
+            newRecords = own.Count,
+            overrides,
+            formIdRange = own.Count == 0 ? "" : $"{own.Min(r => r.FormKey.ID):X3}-{own.Max(r => r.FormKey.ID):X3}",
+            byType = own.GroupBy(r => r.Registration.ClassType.Name).OrderBy(g => g.Key).ToDictionary(g => g.Key, g => g.Count()),
+            formLinks = links,
+            scriptAttachments = scripts,
+            scriptProperties = props,
+            records = own.OrderBy(r => r.FormKey.ID).Select(r => new { id = r.FormKey.ID.ToString("X6"), type = r.Registration.ClassType.Name, editorId = r.EditorID }).ToArray(),
+            errors,
+            warnings,
+        };
+        File.WriteAllText(reportPath, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }) + "\n");
+
+        Console.WriteLine($"[validate] {report.plugin}: {own.Count} new records, {overrides} overrides, ESL={esl}, masters={string.Join(",", report.masters)}, FormIDs {report.formIdRange}");
+        Console.WriteLine($"[validate] round trip (read, write, byte compare): {(errors.Any(e => e.StartsWith("round trip")) ? "FAILED" : "identical")}");
+        Console.WriteLine($"[validate] {links} form links, {scripts} script attachments, {props} script properties checked");
+        foreach (var w in warnings) Console.WriteLine($"[validate] WARN  {w}");
+        foreach (var e in errors) Console.WriteLine($"[validate] ERROR {e}");
+        return errors.Count;
+    }
+}
