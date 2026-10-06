@@ -19,6 +19,7 @@ Function SetObjectiveDisplayed(Int aiObjective, Bool abDisplayed = True, Bool ab
 Function SetObjectiveFailed(Int aiObjective, Bool abFailed = True) native
 Bool Function Start() native
 Function Stop() native
+Bool Function UpdateCurrentInstanceGlobal(GlobalVariable aUpdateGlobal) native
 Bool Function SetStage(Int aiStage)
 	Return SetCurrentStageID(aiStage)
 EndFunction

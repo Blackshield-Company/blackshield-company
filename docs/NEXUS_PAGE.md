@@ -1,25 +1,26 @@
 # Nexus Mods page: Blackshield Company
 
-Don't upload anything until the in-game checklist (`docs/TESTING.md`) passes.
+Early beta: v0.1.0 passed every automated build check but hasn't been playtested in-game. The page says so up front. Exact upload-form values are in [NEXUS_FIELDS.md](NEXUS_FIELDS.md).
 
 ## Page settings
 
 - **Game:** Skyrim Special Edition
 - **Mod name:** Blackshield Company
-- **Version:** 0.1.0
+- **Version:** 0.1.0 (early beta)
 - **Category:** Guilds/Factions (alternative: Quests and Adventures)
 - **Suggested tags:** Lore-Friendly, Quests, Factions, Gameplay, Radiant, Followers, ESL, No SKSE, Scripted
-- **Requirements (Nexus "Requirements" tab):** none. Mark *Off-site requirement: Skyrim Special Edition 1.5.97 or 1.6.x*.
+- **Requirements (Nexus "Requirements" tab):** none. The base game (SE/AE 1.5.97 or 1.6.x) is implied.
 - **Permissions (suggested):** source on GitHub under MIT, so allow modification and conversions with credit. Don't allow re-uploads of the archive itself.
 - **File to upload:** `BlackshieldCompany-0.1.0.zip` (FOMOD), main file, named "Blackshield Company".
-- **Short summary (field limit ~255 chars):**
-  Join the Blackshield Company: take radiant contracts across Skyrim's holds, earn gold and renown, fill the company treasury and rise from Recruit to Commander. ESL-flagged, no SKSE, no requirements.
+- **Short summary:** see NEXUS_FIELDS.md.
 
 ## Description (paste into the BBCode editor)
 
 ```bbcode
 [center][size=6][b]BLACKSHIELD COMPANY[/b][/size]
-[size=3][i]A free company of sellswords. We keep our contracts. We hold the line.[/i][/size][/center]
+[size=3][i]A free company of sellswords. We keep our contracts. We hold the line.[/i][/size]
+
+[size=3][color=#e0a030][b]EARLY BETA (v0.1.0)[/b]: this version passes every automated build check but hasn't been playtested in-game yet. Please report bugs in the Bugs tab or on GitHub, ideally with your Papyrus log.[/color][/size][/center]
 
 [line]
 
@@ -58,14 +59,16 @@ Install with [b]Mod Organizer 2[/b] or [b]Vortex[/b] (FOMOD installer) and enabl
 [*]Uses the vanilla radiant system to pick locations, so other radiant quests won't send you to a location this mod has reserved, and the reverse.
 [*]The sellsword is recruited through the vanilla follower system. Follower frameworks that hook the vanilla follower quest should work but haven't been tested yet.
 [*]Alternate-start mods: supported (the letter only waits for the vanilla Helgen intro if it's running).
+[*]Fully compatible with [b]Daedric Ledger: Bounties of Oblivion[/b] (same author). Both can run at the same time.
 [*]Gear reuses vanilla meshes, so retextures of the ebony sword, ebony shield and steel plate cuirass apply to it too.
 [/list]
 
 [size=4][b]Uninstalling[/b][/size]
 As with any scripted mod, don't remove it mid-playthrough. If you must, finish or abandon any active contract and dismiss the sellsword first.
 
-[size=4][b]Known issues / v0.1 limits[/b][/size]
+[size=4][b]Known issues / early beta limits[/b][/size]
 [list]
+[*]Not playtested in-game yet. Found something? Please post it in the Bugs tab.
 [*]No voice acting. The company speaks through letters, the ledger and message boxes.
 [*]If every eligible location has been cleared or reserved, the ledger will say no contract of that kind is available. Try another type.
 [*]Hold the Line raiders spawn at the fort's map marker and run at you. If you trigger it from an odd angle they may take a moment to arrive.
@@ -78,7 +81,7 @@ set BSC_PayMult to 1.0         (multiplier on all contract pay)
 set BSC_IntroMinLevel to 2     (level before the courier letter arrives)[/code]
 
 [size=4][b]Roadmap[/b][/size]
-Recruiter NPC and company hall, escort contracts, an MCM, and more contract types. Next up in the series: [i]Bounties of Oblivion[/i], [i]Contract Hunter[/i], [i]Steel Oath[/i] and [i]Ember Smithing[/i].
+Recruiter NPC and company hall, escort contracts, an MCM, and more contract types. Also in the series: [i]Daedric Ledger: Bounties of Oblivion[/i]. Coming later: [i]Contract Hunter[/i], [i]Steel Oath[/i] and [i]Ember Smithing[/i].
 
 [size=4][b]Source[/b][/size]
 Open source (MIT): [url=https://github.com/synthalorian/blackshield-company]github.com/synthalorian/blackshield-company[/url]

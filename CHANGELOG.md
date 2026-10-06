@@ -4,7 +4,7 @@ All notable changes to Blackshield Company. Versions follow [Semantic Versioning
 
 ## [0.1.0] - 2026-10-06
 
-First playtest build.
+Early beta. First public release. It passes every automated check in the build (Papyrus compile, plugin validation, round trip, FOMOD schema) but has not been playtested in-game yet. Please report problems on the Nexus page or on GitHub.
 
 ### Added
 - Recruitment by courier letter once you are level 2 and out of the Helgen intro.
@@ -19,3 +19,4 @@ First playtest build.
 - Treasury withdrawals from Captain.
 - Company sellsword from Captain, using the vanilla follower system.
 - ESL-flagged plugin. Skyrim.esm is the only master. No SKSE or other requirements.
+- FOMOD installer with optional Papyrus sources.

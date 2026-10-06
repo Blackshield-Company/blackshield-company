@@ -2,7 +2,9 @@
 
 A Skyrim Special Edition mod: join a mercenary company, take radiant contracts across Skyrim's holds, and rise from Recruit to Commander.
 
-**Status: v0.1.0, first playtest build.** It has not been played in-game yet. See [docs/TESTING.md](docs/TESTING.md).
+**Status: v0.1.0, early beta.** It passes every automated check in the build (Papyrus compile, plugin validation, byte-exact round trip, FOMOD schema) but has not been playtested in-game yet. Expect rough edges and please report what you find. See [docs/TESTING.md](docs/TESTING.md).
+
+Also by the same author and fully compatible: [Daedric Ledger: Bounties of Oblivion](https://github.com/synthalorian/bounties-of-oblivion).
 
 - Game: Skyrim Special Edition / Anniversary Edition 1.6.x (also fine on 1.5.97). Works on Windows and on Linux through Proton.
 - Requirements: none beyond the base game. No SKSE, no SkyUI, no DLC.
@@ -59,7 +61,7 @@ Requirements: .NET SDK 9 or newer, python3, curl, and optionally `xmllint` (libx
 src/papyrus/                 Papyrus sources (.psc)
 src/plugin/                  Mutagen plugin generator + pinned FormIDs
 fomod/                       FOMOD installer config (info.xml, ModuleConfig.xml)
-docs/                        Testing checklist, Nexus page, design notes
+docs/                        Testing checklist, design notes, Nexus page and upload fields
 tools/modkit/                Reusable tooling shared by the whole mod series
 build.sh                     One-command build
 ```

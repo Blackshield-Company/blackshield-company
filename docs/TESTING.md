@@ -1,4 +1,6 @@
-# In-game test checklist (v0.1.0)
+# In-game test checklist (v0.1.0, early beta)
+
+v0.1.0 ships as an early beta. It passed every automated build check but hasn't been played in-game yet. This checklist is for players and testers who want to confirm everything works, and for the next round of fixes.
 
 Open the console with `~`. Commands that take a quest or global accept the EditorID directly. `player.additem` needs a full FormID, which depends on your load order, so look it up first:
 
@@ -27,7 +29,7 @@ bEnableTrace=1
 bLoadDebugInformation=1
 ```
 
-The log is written to `.../My Games/Skyrim Special Edition/Logs/Script/Papyrus.0.log`. After each session, run `grep -n "BSC_" Papyrus.0.log` and send me anything it finds.
+The log is written to `.../My Games/Skyrim Special Edition/Logs/Script/Papyrus.0.log`. After each session, run `grep -n "BSC_" Papyrus.0.log` and report anything it finds.
 
 ---
 

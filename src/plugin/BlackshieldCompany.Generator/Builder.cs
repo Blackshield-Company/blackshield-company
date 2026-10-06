@@ -17,6 +17,17 @@ internal sealed class Builder
     // Contract types (must match BSC_ContractScript / BSC_CompanyScript)
     private const int ContractClear = 0, ContractBounty = 1, ContractHold = 2;
 
+    // Quest DNAM form version written by the SE Creation Kit (Mutagen defaults to 255).
+    private const byte VanillaQuestFormVersion = 65;
+
+    /// <summary>Script properties deliberately left unfilled ("EditorID:Script.Property"), for the validator.</summary>
+    public HashSet<string> ExpectedUnfilled { get; } = new()
+    {
+        "BSC_ContractClear:BSC_ContractScript.RaiderList",
+        "BSC_ContractBounty:BSC_ContractScript.RaiderList",
+        "BSC_ContractHold:BSC_ContractScript.Target",
+    };
+
     public Builder(SkyrimMod mod, FormIdRegistry ids)
     {
         _mod = mod;
@@ -336,6 +347,7 @@ internal sealed class Builder
             Flags = Quest.Flag.StartGameEnabled,
             Priority = 50,
             Type = Quest.TypeEnum.None,
+            QuestFormVersion = VanillaQuestFormVersion,
             NextAliasID = 1,
         });
         company.Aliases.Add(new QuestAlias
@@ -522,6 +534,7 @@ internal sealed class Builder
             Name = name,
             Priority = 60,
             Type = Quest.TypeEnum.SideQuest,
+            QuestFormVersion = VanillaQuestFormVersion,
         });
         q.Stages.Add(new QuestStage { Index = 0, Flags = QuestStage.Flag.StartUpStage });
         q.Stages.Add(new QuestStage { Index = 10, LogEntries = { new QuestLogEntry { Entry = startLog } } });

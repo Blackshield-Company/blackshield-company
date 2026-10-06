@@ -32,7 +32,8 @@ internal static class Program
         var modKey = ModKey.FromFileName(PluginName);
         var ids = new FormIdRegistry(idsPath, modKey);
         var mod = new SkyrimMod(modKey, Release);
-        new Builder(mod, ids).Build();
+        var builder = new Builder(mod, ids);
+        builder.Build();
 
         mod.ModHeader.Flags |= SkyrimModHeader.HeaderFlag.Small; // ESL-flagged ESP
         // Header 1.70 (not 1.71): FormIDs start at 0x800, so this loads on every SE/AE
@@ -50,7 +51,7 @@ internal static class Program
         foreach (var r in ids.Retired) Console.WriteLine($"[generate] note: retired EditorID kept reserved: {r}");
         Console.WriteLine($"[generate] wrote {outPath}");
 
-        var errors = PluginValidator.Validate(outPath, new PapyrusIndex(papyrusDir), new HashSet<ModKey> { Skyrim }, reportPath);
+        var errors = PluginValidator.Validate(outPath, new PapyrusIndex(papyrusDir), new HashSet<ModKey> { Skyrim }, reportPath, builder.ExpectedUnfilled);
         return errors == 0 ? 0 : 1;
     }
 }

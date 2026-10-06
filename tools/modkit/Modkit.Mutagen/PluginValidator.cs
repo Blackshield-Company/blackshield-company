@@ -13,10 +13,17 @@ namespace Modkit.Mutagen;
 /// </summary>
 public static class PluginValidator
 {
-    public static int Validate(string pluginPath, PapyrusIndex papyrus, IReadOnlySet<ModKey> allowedMasters, string reportPath)
+    /// <param name="expectedUnfilled">
+    /// Script properties that are left unfilled on purpose, as "EditorID:Script.Property".
+    /// They are reported as expected instead of as warnings; stale entries are warned about.
+    /// </param>
+    public static int Validate(string pluginPath, PapyrusIndex papyrus, IReadOnlySet<ModKey> allowedMasters, string reportPath,
+        IReadOnlySet<string>? expectedUnfilled = null)
     {
         var errors = new List<string>();
         var warnings = new List<string>();
+        var expected = new List<string>();
+        var unusedExpected = new HashSet<string>(expectedUnfilled ?? new HashSet<string>(), StringComparer.OrdinalIgnoreCase);
         using var mod = SkyrimMod.CreateFromBinaryOverlay(pluginPath, SkyrimRelease.SkyrimSE);
         var records = mod.EnumerateMajorRecords().ToList();
         var own = records.Where(r => r.FormKey.ModKey == mod.ModKey).ToList();
@@ -64,7 +71,11 @@ public static class PluginValidator
                 if (!papyrus.HasScript(s.Name)) { errors.Add($"{owner.EditorID}: script '{s.Name}' has no .psc source"); continue; }
                 var filled = s.Properties.Select(p => p.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
                 foreach (var decl in papyrus.Properties(s.Name).Where(d => !d.HasDefault && !filled.Contains(d.Name)))
-                    warnings.Add($"{owner.EditorID}: {s.Name}.{decl.Name} is declared but not filled (None/0 at runtime)");
+                {
+                    var key = $"{owner.EditorID}:{s.Name}.{decl.Name}";
+                    if (unusedExpected.Remove(key)) expected.Add(key);
+                    else warnings.Add($"{owner.EditorID}: {s.Name}.{decl.Name} is declared but not filled (None/0 at runtime)");
+                }
                 foreach (var p in s.Properties)
                 {
                     props++;
@@ -91,10 +102,33 @@ public static class PluginValidator
                 CheckScripts(r, vm.VirtualMachineAdapter.Scripts);
         }
 
+        foreach (var stale in unusedExpected.OrderBy(x => x))
+            warnings.Add($"expected-unfilled entry '{stale}' does not match an unfilled property (stale?)");
+
+        // Message boxes: the engine shows at most 10 buttons.
+        foreach (var m in mod.Messages)
+            if (m.MenuButtons.Count > 10) errors.Add($"{m.EditorID}: {m.MenuButtons.Count} buttons (max 10)");
+
         // Quest-specific sanity: alias ids referenced by objectives and properties exist.
+        var tagRx = new System.Text.RegularExpressions.Regex(@"<(Alias|Global)=([^>.]+)[^>]*>");
+        var globalIds = mod.Globals.ToDictionary(g => g.FormKey, g => g.EditorID ?? "");
         foreach (var q in mod.Quests)
         {
             var aliasIds = q.Aliases.Select(a => (int)a.ID).ToHashSet();
+            // Text replacement tags must name an alias of this quest / a global listed in its Text Display Globals.
+            var aliasNames = q.Aliases.Select(a => a.Name ?? "").ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var textGlobals = q.TextDisplayGlobals.Select(g => globalIds.TryGetValue(g.FormKey, out var e) ? e : g.FormKey.ToString()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var texts = q.Objectives.Select(o => (where: $"objective {o.Index}", text: o.DisplayText?.String ?? ""))
+                .Concat(q.Stages.SelectMany(st => st.LogEntries.Select(le => (where: $"stage {st.Index} log", text: le.Entry?.String ?? ""))));
+            foreach (var (where, text) in texts)
+                foreach (System.Text.RegularExpressions.Match m in tagRx.Matches(text))
+                {
+                    var name = m.Groups[2].Value;
+                    if (m.Groups[1].Value == "Alias" && !aliasNames.Contains(name))
+                        errors.Add($"{q.EditorID}: {where} uses <Alias={name}> but the quest has no such alias");
+                    if (m.Groups[1].Value == "Global" && !textGlobals.Contains(name))
+                        errors.Add($"{q.EditorID}: {where} uses <Global={name}> but it is not in the quest's Text Display Globals");
+                }
             foreach (var o in q.Objectives)
                 foreach (var t in o.Targets)
                     if (!aliasIds.Contains(t.AliasID)) errors.Add($"{q.EditorID}: objective {o.Index} targets missing alias {t.AliasID}");
@@ -139,12 +173,14 @@ public static class PluginValidator
             records = own.OrderBy(r => r.FormKey.ID).Select(r => new { id = r.FormKey.ID.ToString("X6"), type = r.Registration.ClassType.Name, editorId = r.EditorID }).ToArray(),
             errors,
             warnings,
+            expectedUnfilled = expected,
         };
         File.WriteAllText(reportPath, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }) + "\n");
 
         Console.WriteLine($"[validate] {report.plugin}: {own.Count} new records, {overrides} overrides, ESL={esl}, masters={string.Join(",", report.masters)}, FormIDs {report.formIdRange}");
         Console.WriteLine($"[validate] round trip (read, write, byte compare): {(errors.Any(e => e.StartsWith("round trip")) ? "FAILED" : "identical")}");
         Console.WriteLine($"[validate] {links} form links, {scripts} script attachments, {props} script properties checked");
+        if (expected.Count > 0) Console.WriteLine($"[validate] {expected.Count} script properties intentionally unfilled (listed in the report)");
         foreach (var w in warnings) Console.WriteLine($"[validate] WARN  {w}");
         foreach (var e in errors) Console.WriteLine($"[validate] ERROR {e}");
         return errors.Count;
