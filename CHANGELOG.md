@@ -2,6 +2,13 @@
 
 All notable changes to Blackshield Company. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+## [0.1.1] - 2026-10-08
+
+### Fixed
+- The recruitment letter now arrives. On 1.6 the company quest does not start without `SEQ/BlackshieldCompany.seq`, so a new game never got the courier. Save/load also restarts the recruitment timer and an active contract's poll.
+
 ## [0.1.0] - 2026-10-06
 
 Early beta. First public release. It passes every automated check in the build (Papyrus compile, plugin validation, round trip, FOMOD schema) but has not been playtested in-game yet. Please report problems on the Nexus page or on GitHub.

@@ -20,6 +20,7 @@
   "BSC_Ledger": "000819",
   "BSC_LedgerEffect": "00080D",
   "BSC_Letter": "000818",
+  "BSC_LoadQuest": "000835",
   "BSC_MsgContractMenu": "00082B",
   "BSC_MsgContractPaid": "00082E",
   "BSC_MsgContractStatus": "00082D",

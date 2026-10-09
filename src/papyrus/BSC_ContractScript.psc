@@ -26,6 +26,14 @@ Int wavesSpawned = 0
 Actor[] raiders
 Bool raidersReady = False
 
+; Called by BSC_CompanyScript after a save load. The poll does not survive one.
+Function ResumeAfterLoad()
+	If finished || !IsRunning()
+		Return
+	EndIf
+	RegisterForSingleUpdate(4.0)
+EndFunction
+
 ; Called by BSC_CompanyScript right after Start() succeeds.
 Function Begin()
 	finished = False

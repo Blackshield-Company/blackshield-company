@@ -74,6 +74,17 @@ Event OnInit()
 	RegisterForSingleUpdate(20.0)
 EndEvent
 
+; Update registrations do not survive a save load. BSC_LoadAliasScript calls this.
+Function GameLoaded()
+	If BSC_Joined.GetValueInt() == 0 && !letterDelivered
+		RegisterForSingleUpdate(20.0)
+	EndIf
+	BSC_ContractScript active = ActiveContract()
+	If active
+		active.ResumeAfterLoad()
+	EndIf
+EndFunction
+
 Event OnUpdate()
 	If BSC_Joined.GetValueInt() != 0 || letterDelivered
 		Return

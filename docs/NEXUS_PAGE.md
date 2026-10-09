@@ -1,17 +1,17 @@
 # Nexus Mods page: Blackshield Company
 
-Early beta: v0.1.0 passed every automated build check but hasn't been playtested in-game. The page says so up front. Exact upload-form values are in [NEXUS_FIELDS.md](NEXUS_FIELDS.md).
+Early beta: v0.1.1 fixes the missing courier letter. Exact upload-form values are in [NEXUS_FIELDS.md](NEXUS_FIELDS.md).
 
 ## Page settings
 
 - **Game:** Skyrim Special Edition
 - **Mod name:** Blackshield Company
-- **Version:** 0.1.0 (early beta)
+- **Version:** 0.1.1 (early beta)
 - **Category:** Guilds/Factions (alternative: Quests and Adventures)
 - **Suggested tags:** Lore-Friendly, Quests, Factions, Gameplay, Radiant, Followers, ESL, No SKSE, Scripted
 - **Requirements (Nexus "Requirements" tab):** none. The base game (SE/AE 1.5.97 or 1.6.x) is implied.
 - **Permissions (suggested):** source on GitHub under MIT, so allow modification and conversions with credit. Don't allow re-uploads of the archive itself.
-- **File to upload:** `BlackshieldCompany-0.1.0.zip` (FOMOD), main file, named "Blackshield Company".
+- **File to upload:** `BlackshieldCompany-0.1.1.zip` (FOMOD), main file, named "Blackshield Company".
 - **Short summary:** see NEXUS_FIELDS.md.
 
 ## Description (paste into the BBCode editor)
@@ -20,7 +20,7 @@ Early beta: v0.1.0 passed every automated build check but hasn't been playtested
 [center][size=6][b]BLACKSHIELD COMPANY[/b][/size]
 [size=3][i]A free company of sellswords. We keep our contracts. We hold the line.[/i][/size]
 
-[size=3][color=#e0a030][b]EARLY BETA (v0.1.0)[/b]: this version passes every automated build check but hasn't been playtested in-game yet. Please report bugs in the Bugs tab or on GitHub, ideally with your Papyrus log.[/color][/size][/center]
+[size=3][color=#e0a030][b]EARLY BETA (v0.1.1)[/b]: the courier letter now arrives on a new game. v0.1.0 never started the company quest on 1.6. Please report bugs in the Bugs tab or on GitHub, ideally with your Papyrus log.[/color][/size][/center]
 
 [line]
 

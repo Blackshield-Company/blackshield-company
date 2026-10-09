@@ -27,6 +27,20 @@ public static class Vmad
         return a;
     }
 
+    /// <summary>Attaches scripts to a quest alias (e.g. a ReferenceAlias forced to the player).</summary>
+    public static QuestAdapter WithAliasScripts(this QuestAdapter adapter, FormKey quest, int aliasId, params ScriptEntry[] scripts)
+    {
+        var a = new QuestFragmentAlias
+        {
+            Property = new ScriptObjectProperty { Object = new FormLink<ISkyrimMajorRecordGetter>(quest), Alias = (short)aliasId },
+            Version = 5,
+            ObjectFormat = 2,
+        };
+        a.Scripts.AddRange(scripts);
+        adapter.Aliases.Add(a);
+        return adapter;
+    }
+
     public static ScriptObjectProperty Obj(string name, FormKey target) => new()
     {
         Name = name,

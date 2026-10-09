@@ -4,7 +4,7 @@ Game: Skyrim Special Edition
 
 Mod name: Blackshield Company
 
-Version: 0.1.0 (early beta)
+Version: 0.1.1 (early beta)
 
 Category: Guilds/Factions
 
@@ -12,9 +12,9 @@ Short summary (210 chars):
 Join the Blackshield Company: take radiant contracts across Skyrim's holds, earn gold and renown, fill the company treasury and rise from Recruit to Commander. ESL-flagged, no SKSE, no requirements. Early beta.
 
 Main file:
-- File: BlackshieldCompany-0.1.0.zip (FOMOD installer)
+- File: BlackshieldCompany-0.1.1.zip (FOMOD installer)
 - File name: Blackshield Company
-- File version: 0.1.0
+- File version: 0.1.1
 - File category: Main Files
 - File description: Early beta. FOMOD installer with BlackshieldCompany.esp (ESL-flagged), compiled scripts, and optional Papyrus sources. Requires only Skyrim Special Edition / Anniversary Edition (1.5.97 or 1.6.x).
 

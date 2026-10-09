@@ -379,6 +379,29 @@ internal sealed class Builder
             // index 0 is unused (no promotion to Recruit); repeat Blade's message to keep the array dense
             Vmad.ObjList("PromotionMessages", new[] { promotions[0] }.Concat(promotions).ToArray())));
 
+        // Separate start-game-enabled quest so a save that already has the company
+        // quest running still gets a player alias. New aliases on a running quest do not fill.
+        var questLoad = Id("BSC_LoadQuest");
+        var load = Add(new Quest(questLoad, R)
+        {
+            EditorID = "BSC_LoadQuest",
+            Name = "Blackshield Company",
+            Flags = Quest.Flag.StartGameEnabled,
+            Priority = 40,
+            Type = Quest.TypeEnum.None,
+            QuestFormVersion = VanillaQuestFormVersion,
+            NextAliasID = 1,
+        });
+        load.Aliases.Add(new QuestAlias
+        {
+            ID = 0,
+            Type = QuestAlias.TypeEnum.Reference,
+            Name = "Player",
+            ForcedReference = new FormLinkNullable<IPlacedGetter>(Player),
+        });
+        load.VirtualMachineAdapter = Vmad.QuestAdapter()
+            .WithAliasScripts(questLoad, 0, Vmad.Script("BSC_LoadAliasScript", Vmad.Obj("Company", questCompany)));
+
         // Contract: clear a bandit camp ----------------------------------------------------------
         var clear = ContractQuest(questClear, "BSC_ContractClear", "Blackshield Contract: Clear the Camp",
             "The Blackshield Company ledger lists a contract on the bandits holed up at <Alias=ContractLocation>. Their leader dies, the contract pays.",
