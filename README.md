@@ -2,7 +2,7 @@
 
 A Skyrim Special Edition mod: join a mercenary company, take radiant contracts across Skyrim's holds, and rise from Recruit to Commander.
 
-**Status: v0.1.1, early beta.** The courier letter now starts on 1.6. v0.1.0 shipped without the SEQ file, so a new game never got it. See [docs/TESTING.md](docs/TESTING.md).
+**Status: v0.1.2, early beta.** The courier letter now starts on 1.6. v0.1.2 shipped without the SEQ file, so a new game never got it. See [docs/TESTING.md](docs/TESTING.md).
 
 Also by the same author and fully compatible: [Daedric Ledger: Bounties of Oblivion](https://github.com/synthalorian/bounties-of-oblivion).
 

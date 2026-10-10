@@ -560,7 +560,7 @@ internal sealed class Builder
             QuestFormVersion = VanillaQuestFormVersion,
         });
         q.Stages.Add(new QuestStage { Index = 0, Flags = QuestStage.Flag.StartUpStage });
-        q.Stages.Add(new QuestStage { Index = 10, LogEntries = { new QuestLogEntry { Entry = startLog } } });
+        q.Stages.Add(new QuestStage { Index = 10, LogEntries = { new QuestLogEntry { Flags = 0, Entry = startLog } } });
         q.Stages.Add(new QuestStage
         {
             Index = 100,
