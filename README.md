@@ -68,6 +68,13 @@ build.sh                     One-command build
 
 `tools/modkit/` is written to be reused by the next mods in the series (Bounties of Oblivion, Contract Hunter, Steel Oath, Ember Smithing). See [tools/modkit/README.md](tools/modkit/README.md).
 
+## Support
+
+Donations are optional. Nothing in the mod is gated on them.
+
+- GitHub Sponsors: https://github.com/sponsors/synthalorian
+- Ko-fi: https://ko-fi.com/synthalorian
+
 ## Credits and licenses
 
 - Code in this repo: MIT (see `LICENSE`).
