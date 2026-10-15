@@ -1,3 +1,5 @@
+![blackshield-company](.github/preview.png)
+
 # Blackshield Company
 
 A Skyrim Special Edition mod: join a mercenary company, take radiant contracts across Skyrim's holds, and rise from Recruit to Commander.
