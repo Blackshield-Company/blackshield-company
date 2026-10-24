@@ -84,7 +84,7 @@ set BSC_IntroMinLevel to 2     (level before the courier letter arrives)[/code]
 Recruiter NPC and company hall, escort contracts, an MCM, and more contract types. Also in the series: [i]Daedric Ledger: Bounties of Oblivion[/i]. Coming later: [i]Contract Hunter[/i], [i]Steel Oath[/i] and [i]Ember Smithing[/i].
 
 [size=4][b]Source[/b][/size]
-Open source (MIT): [url=https://github.com/synthalorian/blackshield-company]github.com/synthalorian/blackshield-company[/url]
+Open source (MIT): [url=https://github.com/Blackshield-Company/blackshield-company]github.com/Blackshield-Company/blackshield-company[/url]
 
 [size=4][b]Credits[/b][/size]
 [list]

@@ -6,7 +6,7 @@ A Skyrim Special Edition mod: join a mercenary company, take radiant contracts a
 
 **Status: v0.1.2, early beta.** The courier letter now starts on 1.6. v0.1.2 shipped without the SEQ file, so a new game never got it. See [docs/TESTING.md](docs/TESTING.md).
 
-Also by the same author and fully compatible: [Daedric Ledger: Bounties of Oblivion](https://github.com/synthalorian/bounties-of-oblivion).
+Also by the same author and fully compatible: [Daedric Ledger: Bounties of Oblivion](https://github.com/Blackshield-Company/bounties-of-oblivion).
 
 - Game: Skyrim Special Edition / Anniversary Edition 1.6.x (also fine on 1.5.97). Works on Windows and on Linux through Proton.
 - Requirements: none beyond the base game. No SKSE, no SkyUI, no DLC.
@@ -29,7 +29,7 @@ The gear reuses vanilla meshes (ebony sword and shield, steel plate cuirass) wit
 
 ## Install
 
-Grab `BlackshieldCompany-<version>.zip` from [Releases](https://github.com/synthalorian/blackshield-company/releases) (it's a FOMOD installer).
+Grab `BlackshieldCompany-<version>.zip` from [Releases](https://github.com/Blackshield-Company/blackshield-company/releases) (it's a FOMOD installer).
 
 - **Mod Organizer 2**: *Install a new mod from an archive*, pick the zip, then enable `BlackshieldCompany.esp` in the right pane.
 - **Vortex**: drag the zip into the Mods page, install and enable it.
